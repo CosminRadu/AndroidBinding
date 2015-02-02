@@ -1,14 +1,14 @@
 package gueei.binding.collections;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import gueei.binding.Command;
 import gueei.binding.IObservable;
 import gueei.binding.IPropertyContainer;
 import gueei.binding.Observable;
 import gueei.binding.Observer;
 import gueei.binding.utility.IModelReflector;
-
-import java.util.Collection;
-import java.util.HashMap;
 
 
 public class ObservableMapper implements IPropertyContainer {
@@ -32,7 +32,7 @@ public class ObservableMapper implements IPropertyContainer {
 		mappingModel = model;
 		try {
 			for(String key: observableMapping.keySet()){
-				IObservable<?> obs = reflector.getObservableByName(key, model);
+				IObservable<?> obs = getObservableByName(key, model, reflector);
 				observableMapping.get(key).changeObservingProperty(obs);
 			}
 			/*
@@ -133,7 +133,7 @@ public class ObservableMapper implements IPropertyContainer {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public IObservable<?> getObservableByName(String name) throws Exception {
 		if ((!observableMapping.containsKey(name)) && (mReflector!=null)){
-			IObservable<?> obs = mReflector.getObservableByName(name, mModel);
+            IObservable<?> obs = getObservableByName(name, mModel, mReflector);
 			MockObservable mObservable = new MockObservable(obs.getType());
 			if (mObservable !=null){
 				observableMapping.put(name, mObservable);
@@ -142,7 +142,21 @@ public class ObservableMapper implements IPropertyContainer {
 		return observableMapping.get(name);
 	}
 
-	public Object getValueByName(String name) throws Exception {
+    static private IObservable<?> getObservableByName(
+            String name, Object model, IModelReflector reflector) throws Exception {
+        IObservable<?> obs = null;
+        if (model instanceof IPropertyContainer) {
+            try {
+                obs = ((IPropertyContainer) model).getObservableByName(name);
+            } catch (Exception e) { }
+        }
+        if (obs == null) {
+            obs = reflector.getObservableByName(name, model);
+        }
+        return obs;
+    }
+
+    public Object getValueByName(String name) throws Exception {
 		return null;
 	}
 
