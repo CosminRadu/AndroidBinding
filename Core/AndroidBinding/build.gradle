@@ -42,7 +42,29 @@ android {
     }
 }
 
+version = 'v0.6.1000'
+
+// create tasks jar<Variant> for all non-Debug variants that generates the bare JAR file in builds/libs
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
+        return; // Skip debug builds.
+    }
+    def rawJar = project.tasks.create "jar${variant.name.capitalize()}", Jar
+    rawJar.dependsOn variant.javaCompile
+    // Include Java classes
+    rawJar.from variant.javaCompile.destinationDir
+    // This is not needed for :Core:androidbinding (as it doesn't have any JAR dependency we'd like
+    // to embed.
+    // Include dependent jars with some exceptions
+    // rawJar.from configurations.compile.findAll {
+    //     it.getName() != 'android.jar' && it.getName() != 'annotations.jar' && !it.getName().startsWith('junit') && !it.getName().startsWith('support-v4') && !it.getName().startsWith('appcompat-v7') && !it.getName().endsWith('.aar')
+    // }.collect {
+    //     it.isDirectory() ? it : zipTree(it)
+    // }
+    artifacts.add('archives', rawJar);
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // compile 'com.android.support:appcompat-v7:21.0.3'
 }

@@ -1,2 +1,1 @@
-// include ':Core:androidbinding', ':Core:androidbindingv30', ':plugin:AndroidBinding.Plugin.ABS', ':Demo:MarkupDemoICS', ':Demo:pagerplayground'
-include ':plugin:AndroidBinding.Plugin.ABS', ':Demo:PagerPlayground', ':Demo:MarkupDemoICS', 'Core:androidbinding', 'Core:androidbindingv30'
+include ':Core:androidbinding', ':Core:androidbindingv30', ':Core:androidbindingJar', ':plugin:AndroidBinding.Plugin.ABS', ':Demo:PagerPlayground', ':Demo:MarkupDemoICS'

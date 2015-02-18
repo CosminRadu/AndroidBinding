@@ -1,0 +1,41 @@
+// Run: gradlew shadowJar to build a FatJar from the androidbinding and androidbindingv30 projects.
+apply plugin: 'java'
+
+buildscript {
+  repositories { jcenter() }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
+  }
+}
+
+version = 'v0.6.1000'
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+task copyJars(type: Copy) {
+    inputs.files ('../androidbinding/build/libs', '../androidbindingv30/build/libs')
+    outputs.dir 'libs'
+    from '../androidbinding/build/libs'
+    from '../androidbindingv30/build/libs'
+    into 'libs'
+}
+copyJars.dependsOn ':Core:androidbinding:jarRelease'
+copyJars.dependsOn ':Core:androidbindingv30:jarRelease'
+
+compileJava.dependsOn copyJars
+
+shadowJar {
+    baseName = 'androidbinding'
+    dependencies {
+        exclude(dependency('com.android.support:support-v4'))
+        exclude(dependency('com.android.support:appcompat-v7'))
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // Don't take dependency on the projects, instead we define an indirect dependency on the
+    // jarRelease tasks.
+    // compile project(':Core:androidbinding')
+    // compile project(':Core:androidbindingv30')
+}

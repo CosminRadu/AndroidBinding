@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-// TODO: Add FatJar/OneJar/UberJar/Shadow support for parity with original project
 
 android {
     compileSdkVersion 21
@@ -41,6 +40,30 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+}
+
+version = 'v0.6.1000'
+
+// create tasks jar<Variant> for all non-Debug variants that generates the bare JAR file in builds/libs
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
+        return; // Skip debug builds.
+    }
+    def rawJar = project.tasks.create "jar${variant.name.capitalize()}", Jar
+    rawJar.dependsOn variant.javaCompile
+    // Include Java classes
+    rawJar.from variant.javaCompile.destinationDir
+    // We can't use the below with the current build configurations, as :Core:androidbindingv30
+    // depends on the default artifact of :Core:androidbinding, which is still the .aar file
+    // If we can get this to work we can eliminate the need for the androidbindingJar project...
+    // Include dependent jars with some exceptions
+    // rawJar.from configurations.compile.findAll {
+    //     it.getName() != 'android.jar' && it.getName() != 'annotations.jar' && !it.getName().startsWith('junit') && !it.getName().startsWith('support-v4') && !it.getName().startsWith('appcompat-v7') && !it.getName().endsWith('.aar')
+    // }.collect {
+    //     it.isDirectory() ? it : zipTree(it)
+    // }
+    artifacts.add('archives', rawJar);
 }
 
 dependencies {
