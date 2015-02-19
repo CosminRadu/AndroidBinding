@@ -27,9 +27,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="androidbinding-v0.6.1000" level="project" />
-    <orderEntry type="library" exported="" name="androidbinding" level="project" />
     <orderEntry type="library" exported="" name="androidbindingv30-v0.6.1000" level="project" />
-    <orderEntry type="library" exported="" name="androidbindingv30" level="project" />
   </component>
 </module>
 
